@@ -1,6 +1,8 @@
 let xp = 0;
+let playerLevel = 1;
+let xpToLvl = 50;
 let health = 100;
-let gold = 50;
+let gold = 500;
 let currentWeapon = 0;
 let fighting;
 let monsterHealth;
@@ -11,6 +13,7 @@ const button2 = document.querySelector("#button2");
 const button3 = document.querySelector("#button3");
 const text = document.querySelector("#text");
 const xpText = document.querySelector("#xpText");
+const xpToLvlText = document.querySelector("#xpToLvlText");
 const healthText = document.querySelector("#healthText");
 const goldText = document.querySelector("#goldText");
 const monsterStats = document.querySelector("#monsterStats");
@@ -128,7 +131,6 @@ function buyHealth() {
     text.innerText = "You do not have enough gold to buy health.";
   }
 }
-
 function buyWeapon() {
   if (currentWeapon < weapons.length - 1) {
     if (gold >= 30) {
@@ -212,7 +214,6 @@ function attack() {
 
 function getMonsterAttackValue(level) {
   const hit = (level * 5) - (Math.floor(Math.random() * xp));
-  console.log(hit);
   return hit > 0 ? hit : 0;
 }
 
@@ -230,8 +231,30 @@ function defeatMonster() {
   goldText.innerText = gold;
   xpText.innerText = xp;
   update(locations[4]);
+  if (xp >= xpToLvl) {
+    levelUp(xp, xpToLvl);
+  }
 }
 
+function levelUp() {
+  while (xp >= xpToLvl) {
+    playerLevel++;
+    xp -= xpToLvl;
+    xpToLvl = calculateXpToNextLevel(playerLevel);
+    text.innerText = "You have leveled up! Your new level is " + playerLevel  + ".";
+    health += 10;
+    healthText.innerText = health;
+  }
+  xp = xp;
+  xpToLvl = xpToLvl;
+  lvlText.innerText = playerLevel;
+  xpText.innerText =  xp;
+  xpToLvlText.innerText = xpToLvl;
+}
+
+function calculateXpToNextLevel(level) {
+  return Math.floor(50 * (level * 1.5));
+}
 function lose() {
   update(locations[5]);
 }
@@ -242,13 +265,17 @@ function winGame() {
 
 function restart() {
   xp = 0;
+  lvl = 1;
+  xpToLvl = 50;
   health = 100;
-  gold = 50;
+  gold = 500;
   currentWeapon = 0;
   inventory = ["stick"];
   goldText.innerText = gold;
   healthText.innerText = health;
   xpText.innerText = xp;
+  lvlText.innerText = "Level: " + lvl;
+  xpToLvl.innerText = "XP To Lvl: " + xpToLvl;
   goTown();
 }
 
