@@ -11,6 +11,7 @@ let inventory = ["stick"];
 const button1 = document.querySelector('#button1');
 const button2 = document.querySelector("#button2");
 const button3 = document.querySelector("#button3");
+const button4 = document.querySelector("#button4");
 const text = document.querySelector("#text");
 const xpText = document.querySelector("#xpText");
 const xpToLvlText = document.querySelector("#xpToLvlText");
@@ -23,7 +24,8 @@ const weapons = [
   { name: 'stick', power: 5 },
   { name: 'dagger', power: 30 },
   { name: 'claw hammer', power: 50 },
-  { name: 'sword', power: 100 }
+  { name: 'sword', power: 100 },
+  { name: 'greatsword', power: 150},
 ];
 const monsters = [
   {
@@ -37,6 +39,11 @@ const monsters = [
     health: 60
   },
   {
+    name: "goblin",
+    level: 12,
+    health: 100
+  },
+  {
     name: "dragon",
     level: 20,
     health: 300
@@ -45,64 +52,84 @@ const monsters = [
 const locations = [
   {
     name: "town square",
-    "button text": ["Go to store", "Go to cave", "Fight dragon"],
-    "button functions": [goStore, goCave, fightDragon],
+    "button text": ["Go to store", "Go to cave", "Fight dragon", "Inventory"],
+    "button functions": [goStore, goCave, fightDragon, goInventory],
     text: "You are in the town square. You see a sign that says \"Store\"."
   },
   {
     name: "store",
-    "button text": ["Buy 10 health (10 gold)", "Buy weapon (30 gold)", "Go to town square"],
-    "button functions": [buyHealth, buyWeapon, goTown],
+    "button text": ["Buy 10 health (10 gold)", "Buy weapon (30 gold)", "Buy potion (15 gold)", "Go to town square"],
+    "button functions": [buyHealth, buyWeapon, buyPotion, goTown],
     text: "You enter the store."
   },
   {
     name: "cave",
-    "button text": ["Fight slime", "Fight fanged beast", "Go to town square"],
-    "button functions": [fightSlime, fightBeast, goTown],
+    "button text": ["Fight slime", "Fight fanged beast", "Fight Goblin", "Go to town Square"],
+    "button functions": [fightSlime, fightBeast, fightGoblin, goTown],
     text: "You enter the cave. You see some monsters."
   },
   {
     name: "fight",
-    "button text": ["Attack", "Dodge", "Run"],
-    "button functions": [attack, dodge, goTown],
+    "button text": ["Attack", "Dodge", "Run", "Inventory"],
+    "button functions": [attack, dodge, goTown, goInventory],
     text: "You are fighting a monster."
   },
   {
     name: "kill monster",
-    "button text": ["Go to town square", "Go to town square", "Go to town square"],
-    "button functions": [goTown, goTown, easterEgg],
+    "button text": ["Go to town square", "Go to town square", "Go to town square", "Go to town square"],
+    "button functions": [goTown, goTown, easterEgg, goTown],
     text: 'The monster screams "Arg!" as it dies. You gain experience points and find gold.'
   },
   {
     name: "lose",
-    "button text": ["REPLAY?", "REPLAY?", "REPLAY?"],
-    "button functions": [restart, restart, restart],
+    "button text": ["REPLAY?", "REPLAY?", "REPLAY?", "REPLAY?"],
+    "button functions": [restart, restart, restart, restart],
     text: "You die. &#x2620;"
   },
   { 
     name: "win", 
-    "button text": ["REPLAY?", "REPLAY?", "REPLAY?"], 
-    "button functions": [restart, restart, restart], 
+    "button text": ["REPLAY?", "REPLAY?", "REPLAY?", "REPLAY?"], 
+    "button functions": [restart, restart, restart, restart], 
     text: "You defeat the dragon! YOU WIN THE GAME! &#x1F389;" 
   },
   {
     name: "easter egg",
-    "button text": ["2", "8", "Go to town square?"],
-    "button functions": [pickTwo, pickEight, goTown],
+    "button text": ["2", "8", "Go to town square?", "Go to town square?"],
+    "button functions": [pickTwo, pickEight, goTown, goTown],
     text: "You find a secret game. Pick a number above. Ten numbers will be randomly chosen between 0 and 10. If the number you choose matches one of the random numbers, you win!"
+  },
+  {
+    name: "inventory",
+    "button text": ["Go to store", "Go to cave", "Go to town square", "Close"],
+    "button functions": [goStore, goCave, goTown, goTown],
+    text: " In your inventory you have: " + inventory,
   }
 ];
+const items = [
+  { name: 'health potion', heal: 20, cost: 15 },
+  
+]
 
 // initialize buttons
 button1.onclick = goStore;
 button2.onclick = goCave;
 button3.onclick = fightDragon;
+button4.onclick = goInventory;
 
 function update(location) {
   monsterStats.style.display = "none";
   button1.innerText = location["button text"][0];
   button2.innerText = location["button text"][1];
   button3.innerText = location["button text"][2];
+  
+
+  if (location["button text"].length > 3) {
+    button4.innerText = location["button text"][3];
+    button4.onclick = location["button functions"][3];
+    } else {
+      button4.style.display = "none";
+    } 
+
   button1.onclick = location["button functions"][0];
   button2.onclick = location["button functions"][1];
   button3.onclick = location["button functions"][2];
@@ -119,6 +146,10 @@ function goStore() {
 
 function goCave() {
   update(locations[2]);
+}
+function goInventory() {
+  update(locations[8]);
+  text.innerHTML = "In your inventory you have: " + inventory.join(", ");
 }
 
 function buyHealth() {
@@ -140,7 +171,6 @@ function buyWeapon() {
       let newWeapon = weapons[currentWeapon].name;
       text.innerText = "You now have a " + newWeapon + ".";
       inventory.push(newWeapon);
-      text.innerText += " In your inventory you have: " + inventory;
     } else {
       text.innerText = "You do not have enough gold to buy a weapon.";
     }
@@ -148,6 +178,17 @@ function buyWeapon() {
     text.innerText = "You already have the most powerful weapon!";
     button2.innerText = "Sell weapon for 15 gold";
     button2.onclick = sellWeapon;
+  }
+}
+
+function buyPotion() {
+  if (gold >= 15) {
+    gold -= 15;
+    inventory.push('health potion');
+    goldText.innerText = gold;
+    text.innerText = "You bought a health potion.";
+  } else {
+    text.innerText = "You do not have enough gold to buy a potion.";
   }
 }
 
@@ -173,8 +214,12 @@ function fightBeast() {
   goFight();
 }
 
-function fightDragon() {
+function fightGoblin() {
   fighting = 2;
+  goFight();
+}
+function fightDragon() {
+  fighting = 3;
   goFight();
 }
 
