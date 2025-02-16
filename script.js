@@ -2,7 +2,7 @@ let xp = 0;
 let playerLevel = 1;
 let xpToLvl = 50;
 let health = 100;
-let gold = 500;
+let gold = 50;
 let currentWeapon = 0;
 let fighting;
 let monsterHealth;
@@ -334,7 +334,7 @@ function restart() {
   lvl = 1;
   xpToLvl = 50;
   health = 100;
-  gold = 500;
+  gold = 50;
   currentWeapon = 0;
   inventory = ["stick"];
   goldText.innerText = gold;
