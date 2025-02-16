@@ -12,6 +12,7 @@ const button1 = document.querySelector('#button1');
 const button2 = document.querySelector("#button2");
 const button3 = document.querySelector("#button3");
 const button4 = document.querySelector("#button4");
+const button5 = document.querySelector("#button5");
 const text = document.querySelector("#text");
 const xpText = document.querySelector("#xpText");
 const xpToLvlText = document.querySelector("#xpToLvlText");
@@ -52,56 +53,56 @@ const monsters = [
 const locations = [
   {
     name: "town square",
-    "button text": ["Go to store", "Go to cave", "Fight dragon", "Inventory"],
-    "button functions": [goStore, goCave, fightDragon, goInventory],
+    "button text": ["Go to store", "Go to cave", "Fight dragon", "Use potion", "Inventory"],
+    "button functions": [goStore, goCave, fightDragon, usePotion, goInventory],
     text: "You are in the town square. You see a sign that says \"Store\"."
   },
   {
     name: "store",
-    "button text": ["Buy 10 health (10 gold)", "Buy weapon (30 gold)", "Buy potion (15 gold)", "Go to town square"],
-    "button functions": [buyHealth, buyWeapon, buyPotion, goTown],
+    "button text": ["Buy 10 health (10 gold)", "Buy weapon (30 gold)", "Buy potion (15 gold)", "Use Potion", "Go to town Square"],
+    "button functions": [buyHealth, buyWeapon, buyPotion, usePotion, goTown],
     text: "You enter the store."
   },
   {
     name: "cave",
-    "button text": ["Fight slime", "Fight fanged beast", "Fight Goblin", "Go to town Square"],
-    "button functions": [fightSlime, fightBeast, fightGoblin, goTown],
+    "button text": ["Fight slime", "Fight fanged beast", "Fight Goblin", "Use potion", "Go to town Square"],
+    "button functions": [fightSlime, fightBeast, fightGoblin, usePotion, goTown],
     text: "You enter the cave. You see some monsters."
   },
   {
     name: "fight",
-    "button text": ["Attack", "Dodge", "Run", "Inventory"],
-    "button functions": [attack, dodge, goTown, goInventory],
+    "button text": ["Attack", "Dodge", "Run", "Use potion", "Inventory"],
+    "button functions": [attack, dodge, goTown, usePotion, goInventory],
     text: "You are fighting a monster."
   },
   {
     name: "kill monster",
-    "button text": ["Go to town square", "Go to town square", "Go to town square", "Go to town square"],
-    "button functions": [goTown, goTown, easterEgg, goTown],
+    "button text": ["Go to town square", "Go to town square", "Go to town square", "Go to town square", "Go to town square"],
+    "button functions": [goTown, goTown, easterEgg, goTown, goTown],
     text: 'The monster screams "Arg!" as it dies. You gain experience points and find gold.'
   },
   {
     name: "lose",
-    "button text": ["REPLAY?", "REPLAY?", "REPLAY?", "REPLAY?"],
-    "button functions": [restart, restart, restart, restart],
+    "button text": ["REPLAY?", "REPLAY?", "REPLAY?", "REPLAY?", "REPLAY?"],
+    "button functions": [restart, restart, restart, restart, restart],
     text: "You die. &#x2620;"
   },
   { 
     name: "win", 
-    "button text": ["REPLAY?", "REPLAY?", "REPLAY?", "REPLAY?"], 
-    "button functions": [restart, restart, restart, restart], 
+    "button text": ["REPLAY?", "REPLAY?", "REPLAY?", "REPLAY?", "REPLAY?"], 
+    "button functions": [restart, restart, restart, restart, restart], 
     text: "You defeat the dragon! YOU WIN THE GAME! &#x1F389;" 
   },
   {
     name: "easter egg",
-    "button text": ["2", "8", "Go to town square?", "Go to town square?"],
-    "button functions": [pickTwo, pickEight, goTown, goTown],
+    "button text": ["2", "8", "Go to town square?", "Go to town square?", "Go to town square?"],
+    "button functions": [pickTwo, pickEight, goTown, goTown, goTown],
     text: "You find a secret game. Pick a number above. Ten numbers will be randomly chosen between 0 and 10. If the number you choose matches one of the random numbers, you win!"
   },
   {
     name: "inventory",
-    "button text": ["Go to store", "Go to cave", "Go to town square", "Close"],
-    "button functions": [goStore, goCave, goTown, goTown],
+    "button text": ["Go to store", "Go to cave", "Go to town square", "Use Potion ", "Close inventory"],
+    "button functions": [goStore, goCave, goTown, usePotion, goTown],
     text: " In your inventory you have: " + inventory,
   }
 ];
@@ -114,7 +115,8 @@ const items = [
 button1.onclick = goStore;
 button2.onclick = goCave;
 button3.onclick = fightDragon;
-button4.onclick = goInventory;
+button4.onclick = usePotion;
+button5.onclick = goInventory;
 
 function update(location) {
   monsterStats.style.display = "none";
@@ -127,8 +129,15 @@ function update(location) {
     button4.innerText = location["button text"][3];
     button4.onclick = location["button functions"][3];
     } else {
-      button4.style.display = "none";
+      button4.style.display = "inline-block";
     } 
+
+  if (location["button text"].length > 4) {
+    button5.innerText = location["button text"][4];
+    button5.onclick = location["button functions"][4];
+  } else {
+    button5.style.display = "inline-block";
+  }
 
   button1.onclick = location["button functions"][0];
   button2.onclick = location["button functions"][1];
@@ -192,6 +201,17 @@ function buyPotion() {
   }
 }
 
+function usePotion() {
+  if (inventory.includes('health potion') && health < 100) {
+    inventory.splice(inventory.indexOf('health potion'), 1);
+    health += 20;
+    healthText.innerText = health;
+    text.innerText = "You used a health potion.";
+  } else {
+    text.innerText = "You are not able to do that right now.";
+  }
+}
+
 function sellWeapon() {
   if (inventory.length > 1) {
     gold += 15;
@@ -229,6 +249,7 @@ function goFight() {
   monsterStats.style.display = "block";
   monsterName.innerText = monsters[fighting].name;
   monsterHealthText.innerText = monsterHealth;
+  
 }
 
 function attack() {
